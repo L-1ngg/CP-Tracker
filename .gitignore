@@ -18,7 +18,6 @@ target/
 # ===========================
 .vscode/
 .claude/
-CLAUDE.md
 
 # ===========================
 # Logs
@@ -73,3 +72,8 @@ docker/volumes/
 .cache/
 .temp/
 tmp/
+*.local.md
+开发文档.md
+CLAUDE.md
+
+

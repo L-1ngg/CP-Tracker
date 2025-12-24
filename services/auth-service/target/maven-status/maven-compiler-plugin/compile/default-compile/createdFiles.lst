@@ -1,6 +1,7 @@
 com\cptracker\auth\service\AdminService.class
 com\cptracker\auth\controller\AuthController.class
 com\cptracker\auth\dto\admin\BanUserRequest.class
+com\cptracker\auth\config\OpenApiConfig.class
 com\cptracker\auth\config\SecurityConfig.class
 com\cptracker\auth\repository\UserRepository.class
 com\cptracker\auth\dto\AuthResponse.class

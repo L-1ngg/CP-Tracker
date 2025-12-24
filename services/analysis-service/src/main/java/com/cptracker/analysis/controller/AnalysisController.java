@@ -22,7 +22,7 @@ public class AnalysisController {
     @GetMapping("/heatmap/{userId}")
     public ResponseEntity<List<DailyActivity>> getHeatmap(
             @PathVariable("userId") Long userId,
-            @RequestParam(defaultValue = "365") int days) {
+            @RequestParam(value = "days", defaultValue = "365") int days) {
         return ResponseEntity.ok(activityService.getHeatmapData(userId, days));
     }
 

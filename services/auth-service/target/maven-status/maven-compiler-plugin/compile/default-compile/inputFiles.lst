@@ -1,4 +1,5 @@
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\AuthApplication.java
+D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\config\OpenApiConfig.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\config\SecurityConfig.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\controller\admin\AdminController.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\controller\AuthController.java

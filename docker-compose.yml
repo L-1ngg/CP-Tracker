@@ -69,6 +69,17 @@ services:
       - cp-tracker-network
     command: server /data --console-address ":9001"
 
+  # Adminer 数据库管理工具
+  adminer:
+    image: adminer:latest
+    container_name: cp-tracker-adminer
+    ports:
+      - "8088:8080"
+    networks:
+      - cp-tracker-network
+    depends_on:
+      - postgres
+
 volumes:
   postgres_data:
   redis_data:

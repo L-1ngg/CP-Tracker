@@ -1,4 +1,5 @@
 D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\analysis\AnalysisApplication.java
+D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\analysis\config\OpenApiConfig.java
 D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\analysis\controller\AnalysisController.java
 D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\analysis\entity\DailyActivity.java
 D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\analysis\entity\DailyActivityId.java

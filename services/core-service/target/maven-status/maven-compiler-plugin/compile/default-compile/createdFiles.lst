@@ -2,10 +2,11 @@ com\cptracker\core\repository\BlogRepository.class
 com\cptracker\core\controller\BlogAdminController.class
 com\cptracker\core\service\BlogReviewService.class
 com\cptracker\core\entity\Blog.class
+com\cptracker\core\config\OpenApiConfig.class
+com\cptracker\core\dto\ReviewBlogRequest.class
+com\cptracker\core\CoreApplication.class
+com\cptracker\core\dto\CreateBlogRequest.class
 com\cptracker\core\entity\BlogReview.class
 com\cptracker\core\service\BlogService.class
-com\cptracker\core\dto\ReviewBlogRequest.class
 com\cptracker\core\controller\BlogController.class
-com\cptracker\core\CoreApplication.class
 com\cptracker\core\repository\BlogReviewRepository.class
-com\cptracker\core\dto\CreateBlogRequest.class

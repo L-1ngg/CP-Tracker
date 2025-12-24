@@ -29,3 +29,45 @@ spring:
           uri: lb://analysis-service
           predicates:
             - Path=/api/analysis/**
+        # API Docs 路由
+        - id: auth-service-api-docs
+          uri: lb://auth-service
+          predicates:
+            - Path=/v3/api-docs/auth
+          filters:
+            - RewritePath=/v3/api-docs/auth, /v3/api-docs
+        - id: core-service-api-docs
+          uri: lb://core-service
+          predicates:
+            - Path=/v3/api-docs/core
+          filters:
+            - RewritePath=/v3/api-docs/core, /v3/api-docs
+        - id: crawler-service-api-docs
+          uri: lb://crawler-service
+          predicates:
+            - Path=/v3/api-docs/crawler
+          filters:
+            - RewritePath=/v3/api-docs/crawler, /v3/api-docs
+        - id: analysis-service-api-docs
+          uri: lb://analysis-service
+          predicates:
+            - Path=/v3/api-docs/analysis
+          filters:
+            - RewritePath=/v3/api-docs/analysis, /v3/api-docs
+
+# SpringDoc OpenAPI
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    urls:
+      - name: auth-service
+        url: /v3/api-docs/auth
+      - name: core-service
+        url: /v3/api-docs/core
+      - name: crawler-service
+        url: /v3/api-docs/crawler
+      - name: analysis-service
+        url: /v3/api-docs/analysis

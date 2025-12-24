@@ -5,6 +5,7 @@ com\cptracker\analysis\repository\UserRatingRepository.class
 com\cptracker\analysis\entity\DailyActivityId.class
 com\cptracker\analysis\entity\DailyActivity.class
 com\cptracker\analysis\entity\UserRating.class
+com\cptracker\analysis\config\OpenApiConfig.class
 com\cptracker\analysis\repository\SkillRadarRepository.class
 com\cptracker\analysis\service\SkillService.class
 com\cptracker\analysis\service\ActivityService.class

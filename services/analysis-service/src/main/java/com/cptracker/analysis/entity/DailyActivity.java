@@ -15,6 +15,7 @@ public class DailyActivity {
     private Long userId;
 
     @Id
+    @Column(name = "\"date\"")
     private LocalDate date;
 
     private Integer count = 0;

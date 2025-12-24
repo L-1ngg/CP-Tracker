@@ -1,4 +1,5 @@
 com\cptracker\crawler\fetcher\SubmissionDTO.class
+com\cptracker\crawler\config\OpenApiConfig.class
 com\cptracker\crawler\fetcher\PlatformFetcher.class
 com\cptracker\crawler\entity\UserHandle.class
 com\cptracker\crawler\entity\UserHandleId.class

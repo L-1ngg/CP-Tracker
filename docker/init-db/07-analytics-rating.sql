@@ -1,5 +1,6 @@
 -- analytics.skill_radar 技能雷达图数据
 CREATE TABLE IF NOT EXISTS analytics.skill_radar (
+    id BIGSERIAL PRIMARY KEY,
     user_id BIGINT,
     tag VARCHAR(50),
     rating DOUBLE PRECISION DEFAULT 0,

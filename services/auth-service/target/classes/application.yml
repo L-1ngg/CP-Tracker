@@ -21,3 +21,12 @@ spring:
 jwt:
   secret: cp-tracker-jwt-secret-key-2025-very-long-string
   expiration: 86400000
+
+# SpringDoc OpenAPI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
