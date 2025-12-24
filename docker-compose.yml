@@ -6,9 +6,9 @@ services:
     image: postgres:16-alpine
     container_name: cp-tracker-postgres
     environment:
-      POSTGRES_USER: cptracker
-      POSTGRES_PASSWORD: cptracker123
-      POSTGRES_DB: cptracker
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -17,7 +17,7 @@ services:
     networks:
       - cp-tracker-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cptracker"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -58,8 +58,8 @@ services:
     image: minio/minio:latest
     container_name: cp-tracker-minio
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin123
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     ports:
       - "9000:9000"
       - "9001:9001"
