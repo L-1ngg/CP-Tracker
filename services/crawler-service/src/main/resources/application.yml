@@ -1,0 +1,28 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: crawler-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cptracker
+    username: cptracker
+    password: cptracker123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+
+crawler:
+  codeforces:
+    api-url: https://codeforces.com/api
+    rate-limit: 5

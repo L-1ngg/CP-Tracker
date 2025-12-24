@@ -1,0 +1,31 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        import-check:
+          enabled: false
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+        - id: core-service
+          uri: lb://core-service
+          predicates:
+            - Path=/api/core/**
+        - id: crawler-service
+          uri: lb://crawler-service
+          predicates:
+            - Path=/api/crawler/**
+        - id: analysis-service
+          uri: lb://analysis-service
+          predicates:
+            - Path=/api/analysis/**

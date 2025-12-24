@@ -1,0 +1,17 @@
+com\cptracker\crawler\fetcher\SubmissionDTO.class
+com\cptracker\crawler\fetcher\PlatformFetcher.class
+com\cptracker\crawler\entity\UserHandle.class
+com\cptracker\crawler\entity\UserHandleId.class
+com\cptracker\crawler\fetcher\CodeforcesSubmissionResponse$CfProblem.class
+com\cptracker\crawler\fetcher\CodeforcesFetcher.class
+com\cptracker\crawler\controller\CrawlerController.class
+com\cptracker\crawler\fetcher\CodeforcesSubmissionResponse.class
+com\cptracker\crawler\CrawlerApplication.class
+com\cptracker\crawler\service\CrawlerService.class
+com\cptracker\crawler\fetcher\UserInfoDTO.class
+com\cptracker\crawler\fetcher\CodeforcesSubmissionResponse$CfSubmission.class
+com\cptracker\crawler\scheduler\CrawlerScheduler.class
+com\cptracker\crawler\fetcher\CodeforcesResponse$CfUser.class
+com\cptracker\crawler\repository\UserHandleRepository.class
+com\cptracker\crawler\config\RestTemplateConfig.class
+com\cptracker\crawler\fetcher\CodeforcesResponse.class

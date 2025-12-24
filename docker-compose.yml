@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:16-alpine
+    container_name: cp-tracker-postgres
+    environment:
+      POSTGRES_USER: cptracker
+      POSTGRES_PASSWORD: cptracker123
+      POSTGRES_DB: cptracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-db:/docker-entrypoint-initdb.d
+    networks:
+      - cp-tracker-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cptracker"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存
+  redis:
+    image: redis:7.2-alpine
+    container_name: cp-tracker-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - cp-tracker-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Nacos 服务注册与配置中心
+  nacos:
+    image: nacos/nacos-server:v2.3.0
+    container_name: cp-tracker-nacos
+    environment:
+      MODE: standalone
+      NACOS_AUTH_ENABLE: "false"
+      JVM_XMS: 256m
+      JVM_XMX: 256m
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    networks:
+      - cp-tracker-network
+
+  # MinIO 对象存储
+  minio:
+    image: minio/minio:latest
+    container_name: cp-tracker-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - cp-tracker-network
+    command: server /data --console-address ":9001"
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+
+networks:
+  cp-tracker-network:
+    driver: bridge

@@ -1,0 +1,11 @@
+D:\Code\github\CP-Tracker\services\core-service\src\main\java\com\cptracker\core\controller\BlogAdminController.java
+D:\Code\github\CP-Tracker\services\core-service\src\main\java\com\cptracker\core\controller\BlogController.java
+D:\Code\github\CP-Tracker\services\core-service\src\main\java\com\cptracker\core\CoreApplication.java
+D:\Code\github\CP-Tracker\services\core-service\src\main\java\com\cptracker\core\dto\CreateBlogRequest.java
+D:\Code\github\CP-Tracker\services\core-service\src\main\java\com\cptracker\core\dto\ReviewBlogRequest.java
+D:\Code\github\CP-Tracker\services\core-service\src\main\java\com\cptracker\core\entity\Blog.java
+D:\Code\github\CP-Tracker\services\core-service\src\main\java\com\cptracker\core\entity\BlogReview.java
+D:\Code\github\CP-Tracker\services\core-service\src\main\java\com\cptracker\core\repository\BlogRepository.java
+D:\Code\github\CP-Tracker\services\core-service\src\main\java\com\cptracker\core\repository\BlogReviewRepository.java
+D:\Code\github\CP-Tracker\services\core-service\src\main\java\com\cptracker\core\service\BlogReviewService.java
+D:\Code\github\CP-Tracker\services\core-service\src\main\java\com\cptracker\core\service\BlogService.java
