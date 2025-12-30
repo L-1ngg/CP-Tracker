@@ -33,8 +33,13 @@ public class AnalysisController {
 
     @GetMapping("/rating/{userId}")
     public ResponseEntity<UserRating> getRating(@PathVariable("userId") Long userId) {
-        return ratingService.getUserRating(userId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(
+            ratingService.getUserRating(userId)
+                .orElseGet(() -> {
+                    UserRating empty = new UserRating();
+                    empty.setUserId(userId);
+                    return empty;
+                })
+        );
     }
 }

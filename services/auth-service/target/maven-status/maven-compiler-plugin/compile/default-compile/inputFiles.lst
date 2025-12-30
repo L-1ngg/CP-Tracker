@@ -10,6 +10,7 @@ D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\dto\LoginRequest.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\dto\RegisterRequest.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\entity\User.java
+D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\exception\GlobalExceptionHandler.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\repository\UserRepository.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\service\AdminService.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\service\AuthService.java
