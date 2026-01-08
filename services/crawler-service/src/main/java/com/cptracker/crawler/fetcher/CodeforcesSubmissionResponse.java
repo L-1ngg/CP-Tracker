@@ -11,6 +11,7 @@ public class CodeforcesSubmissionResponse {
     @Data
     public static class CfSubmission {
         private Long id;
+        private Long creationTimeSeconds;
         private CfProblem problem;
         private String verdict;
         private String programmingLanguage;
@@ -20,5 +21,7 @@ public class CodeforcesSubmissionResponse {
     public static class CfProblem {
         private Integer contestId;
         private String index;
+        private Integer rating;      // 题目难度
+        private List<String> tags;   // 题目标签
     }
 }

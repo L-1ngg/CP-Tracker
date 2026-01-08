@@ -1,5 +1,9 @@
+com\cptracker\auth\service\MinioService.class
 com\cptracker\auth\service\AdminService.class
+com\cptracker\auth\dto\UserProfileResponse$UserProfileResponseBuilder.class
 com\cptracker\auth\controller\AuthController.class
+com\cptracker\auth\dto\UserProfileResponse.class
+com\cptracker\auth\dto\ChangePasswordRequest.class
 com\cptracker\auth\dto\admin\BanUserRequest.class
 com\cptracker\auth\config\OpenApiConfig.class
 com\cptracker\auth\config\SecurityConfig.class
@@ -13,6 +17,7 @@ com\cptracker\auth\dto\admin\ChangeRoleRequest.class
 com\cptracker\auth\dto\RegisterRequest.class
 com\cptracker\auth\dto\AuthResponse$AuthResponseBuilder.class
 com\cptracker\auth\service\JwtService.class
+com\cptracker\auth\dto\UpdateProfileRequest.class
 com\cptracker\auth\controller\admin\AdminController.class
 com\cptracker\auth\dto\admin\MuteUserRequest.class
 com\cptracker\auth\service\AuthService.class

@@ -1,4 +1,3 @@
-
 # ===========================
 # Java / Maven
 # ===========================
@@ -12,12 +11,23 @@ target/
 *.ear
 *.nar
 
+# ===========================
+# IDE
+# ===========================
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
 
-# ===========================
-# IDE - VS Code
-# ===========================
+# VS Code
 .vscode/
-.claude/
+
+# Eclipse
+.classpath
+.project
+.settings/
 
 # ===========================
 # Logs
@@ -28,13 +38,18 @@ logs/
 # ===========================
 # OS Files
 # ===========================
+# macOS
 .DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
+
+# Windows
 ehthumbs.db
 Thumbs.db
+desktop.ini
+nul
 
 # ===========================
 # Environment / Secrets
@@ -53,16 +68,29 @@ node_modules/
 .next/
 .nuxt/
 dist/
+build/
 .pnp/
 .pnp.js
 .yarn/
 *.tsbuildinfo
+.turbo/
 
 # ===========================
 # Docker (local volumes)
 # ===========================
 docker/data/
 docker/volumes/
+
+# ===========================
+# Claude / AI Tools
+# ===========================
+.claude/
+
+# ===========================
+# MinIO CLI
+# ===========================
+mc.exe
+mc
 
 # ===========================
 # Misc
@@ -73,8 +101,10 @@ docker/volumes/
 .cache/
 .temp/
 tmp/
+
+# Local documentation (use docs/ for shared docs)
 *.local.md
-开发文档.md
+
+# Project-specific ignores
 CLAUDE.md
-
-
+CHANGELOG.md

@@ -26,6 +26,10 @@ crawler:
   codeforces:
     api-url: https://codeforces.com/api
     rate-limit: 5
+  atcoder:
+    api-url: https://kenkoooo.com/atcoder/atcoder-api/v3
+  nowcoder:
+    api-url: https://ac.nowcoder.com
 
 # SpringDoc OpenAPI
 springdoc:

@@ -9,4 +9,6 @@ import java.util.List;
 public interface UserHandleRepository extends JpaRepository<UserHandle, UserHandleId> {
 
     List<UserHandle> findByPlatform(String platform);
+
+    List<UserHandle> findByUserId(Long userId);
 }
