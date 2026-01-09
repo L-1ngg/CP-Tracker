@@ -16,6 +16,7 @@ D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\enums\UserRole.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\enums\UserStatus.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\exception\GlobalExceptionHandler.java
+D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\filter\JwtAuthenticationFilter.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\repository\UserRepository.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\service\AdminService.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\service\AuthService.java

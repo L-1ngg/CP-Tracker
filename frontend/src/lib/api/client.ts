@@ -13,6 +13,11 @@ export const apiClient: AxiosInstance = axios.create({
 // Request interceptor - attach JWT token
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    // 如果是 FormData，删除默认的 Content-Type，让浏览器自动设置
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+
     if (typeof window !== 'undefined') {
       const authData = localStorage.getItem('cp-tracker-auth');
       if (authData) {

@@ -3,6 +3,7 @@ com\cptracker\auth\dto\UserProfileResponse$UserProfileResponseBuilder.class
 com\cptracker\auth\dto\UserProfileResponse.class
 com\cptracker\auth\config\OpenApiConfig.class
 com\cptracker\auth\enums\UserRole.class
+com\cptracker\auth\filter\JwtAuthenticationFilter.class
 com\cptracker\auth\config\SecurityConfig.class
 com\cptracker\auth\repository\UserRepository.class
 com\cptracker\auth\dto\AuthResponse.class

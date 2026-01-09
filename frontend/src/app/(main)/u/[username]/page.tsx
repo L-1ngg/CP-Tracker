@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { Loader2, Camera, Eye, EyeOff } from 'lucide-react';
@@ -34,11 +34,15 @@ export default function UserSettingsPage() {
     queryKey: ['profile'],
     queryFn: authApi.getProfile,
     enabled: isAuthenticated,
-    onSuccess: (data) => {
-      setUsername(data.username);
-      setEmail(data.email);
-    },
   });
+
+  // 当 profile 数据加载后，初始化表单
+  useEffect(() => {
+    if (profile) {
+      setUsername(profile.username || '');
+      setEmail(profile.email || '');
+    }
+  }, [profile]);
 
   // 更新用户信息
   const updateProfileMutation = useMutation({

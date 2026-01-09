@@ -38,8 +38,7 @@ export const authApi = {
     formData.append('file', file);
     const response = await apiClient.post<{ avatarUrl: string }>(
       '/api/auth/avatar',
-      formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } }
+      formData
     );
     return response.data.avatarUrl;
   },
