@@ -1,5 +1,7 @@
 package com.cptracker.crawler.fetcher;
 
+import com.cptracker.crawler.config.CrawlerConstants;
+import com.cptracker.crawler.config.CrawlerConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,7 +60,7 @@ public class AtCoderFetcher implements PlatformFetcher {
                 dto.setMaxRating(maxRating);
             }
         } catch (Exception e) {
-            log.warn("获取AtCoder用户Rating失败, handle={}", handle, e.getMessage());
+            log.warn("获取AtCoder用户Rating失败, handle={}, error={}", handle, e.getMessage());
         }
 
         return dto;
@@ -68,7 +70,7 @@ public class AtCoderFetcher implements PlatformFetcher {
     public List<SubmissionDTO> fetchUserSubmissions(String handle) {
         String url = apiUrl + "/user/submissions?user=" + handle;
         List<SubmissionDTO> submissions = new ArrayList<>();
-        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(365);
+        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(CrawlerConstants.DATA_RETENTION_DAYS);
 
         try {
             var response = restTemplate.exchange(

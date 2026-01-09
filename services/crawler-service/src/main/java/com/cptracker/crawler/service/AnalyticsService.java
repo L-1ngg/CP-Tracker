@@ -1,5 +1,6 @@
 package com.cptracker.crawler.service;
 
+import com.cptracker.crawler.config.CrawlerConstants;
 import com.cptracker.crawler.entity.DailyActivity;
 import com.cptracker.crawler.entity.SkillRadar;
 import com.cptracker.crawler.entity.UserRating;
@@ -73,7 +74,7 @@ public class AnalyticsService {
 
     /**
      * 更新每日活跃度
-     * 支持多平台数据合并，会先清理365天前的旧数据
+     * 支持多平台数据合并，会先清理旧数据
      */
     @Transactional
     public void updateDailyActivity(Long userId, String platform, List<SubmissionDTO> submissions) {
@@ -81,8 +82,8 @@ public class AnalyticsService {
             return;
         }
 
-        // 清理365天前的旧数据
-        LocalDate cutoffDate = LocalDate.now().minusDays(365);
+        // 清理旧数据
+        LocalDate cutoffDate = LocalDate.now().minusDays(CrawlerConstants.DATA_RETENTION_DAYS);
         dailyActivityRepository.deleteByUserIdAndDateBefore(userId, cutoffDate);
 
         // 按日期分组统计
@@ -94,6 +95,7 @@ public class AnalyticsService {
                 ));
 
         // 保存每日活跃度（合并多平台数据）
+        List<DailyActivity> activitiesToSave = new ArrayList<>();
         for (Map.Entry<LocalDate, Long> entry : dailyCounts.entrySet()) {
             LocalDate date = entry.getKey();
             int count = entry.getValue().intValue();
@@ -165,6 +167,7 @@ public class AnalyticsService {
                 ));
 
         // 计算每个 tag 的评分和解题数
+        List<SkillRadar> newSkills = new ArrayList<>();
         for (Map.Entry<String, List<SubmissionDTO>> entry : tagGroups.entrySet()) {
             String tag = entry.getKey();
             List<SubmissionDTO> tagSubmissions = entry.getValue();
@@ -192,7 +195,6 @@ public class AnalyticsService {
 
     /**
      * 计算加权平均 Rating
-     * CF 权重 70%，AT 权重 30%
      * 只有一个平台时直接使用该平台 rating
      */
     private Integer calculateWeightedRating(Integer cfRating, Integer atRating) {
@@ -201,7 +203,7 @@ public class AnalyticsService {
 
         if (hasCf && hasAt) {
             // 两个平台都有：加权平均
-            return (int) (cfRating * 0.7 + atRating * 0.3);
+            return (int) (cfRating * CrawlerConstants.CF_RATING_WEIGHT + atRating * CrawlerConstants.AT_RATING_WEIGHT);
         } else if (hasCf) {
             // 只有 CF
             return cfRating;

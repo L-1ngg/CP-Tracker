@@ -1,6 +1,7 @@
 package com.cptracker.core.entity;
 
 import jakarta.persistence.*;
+import com.cptracker.core.enums.BlogStatus;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -28,8 +29,9 @@ public class Blog {
     @Column(name = "cover_url", length = 500)
     private String coverUrl;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private String status = "DRAFT";
+    private BlogStatus status = BlogStatus.DRAFT;
 
     @Column(name = "view_count")
     private Integer viewCount = 0;

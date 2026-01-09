@@ -1,13 +1,11 @@
-com\cptracker\analysis\service\RatingService.class
-com\cptracker\analysis\AnalysisApplication.class
-com\cptracker\analysis\repository\DailyActivityRepository.class
-com\cptracker\analysis\repository\UserRatingRepository.class
 com\cptracker\analysis\entity\DailyActivityId.class
+com\cptracker\analysis\AnalysisApplication.class
 com\cptracker\analysis\entity\DailyActivity.class
 com\cptracker\analysis\entity\UserRating.class
 com\cptracker\analysis\config\OpenApiConfig.class
+com\cptracker\analysis\repository\DailyActivityRepository.class
 com\cptracker\analysis\repository\SkillRadarRepository.class
-com\cptracker\analysis\service\SkillService.class
-com\cptracker\analysis\service\ActivityService.class
+com\cptracker\analysis\repository\UserRatingRepository.class
+com\cptracker\analysis\service\AnalysisService.class
 com\cptracker\analysis\entity\SkillRadar.class
 com\cptracker\analysis\controller\AnalysisController.class

@@ -1,5 +1,7 @@
 package com.cptracker.crawler.fetcher;
 
+import com.cptracker.crawler.config.CrawlerConstants;
+import com.cptracker.crawler.config.CrawlerConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,7 +69,7 @@ public class NowCoderFetcher implements PlatformFetcher {
         // NowCoder 提交记录 API
         String url = apiUrl + "/acm/contest/profile/" + handle + "/practice-coding?pageSize=500";
         List<SubmissionDTO> submissions = new ArrayList<>();
-        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(365);
+        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(CrawlerConstants.DATA_RETENTION_DAYS);
 
         try {
             HttpEntity<String> entity = new HttpEntity<>(createHeaders());
@@ -95,7 +97,7 @@ public class NowCoderFetcher implements PlatformFetcher {
                     dto.setRemoteId(String.valueOf(item.getSubmissionId()));
                     dto.setProblemId(item.getProblemId());
                     // NowCoder status: 5 = AC
-                    dto.setVerdict(item.getStatus() == 5 ? "AC" : item.getStatusMessage());
+                    dto.setVerdict(item.getStatus() == CrawlerConstants.NOWCODER_AC_STATUS ? "AC" : item.getStatusMessage());
                     dto.setLanguage(item.getLanguage());
                     dto.setSubmissionTime(submissionTime);
                     submissions.add(dto);

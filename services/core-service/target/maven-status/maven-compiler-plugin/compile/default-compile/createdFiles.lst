@@ -6,6 +6,8 @@ com\cptracker\core\config\OpenApiConfig.class
 com\cptracker\core\dto\ReviewBlogRequest.class
 com\cptracker\core\CoreApplication.class
 com\cptracker\core\dto\CreateBlogRequest.class
+com\cptracker\core\enums\BlogStatus.class
+com\cptracker\core\enums\ReviewAction.class
 com\cptracker\core\entity\BlogReview.class
 com\cptracker\core\service\BlogService.class
 com\cptracker\core\controller\BlogController.class

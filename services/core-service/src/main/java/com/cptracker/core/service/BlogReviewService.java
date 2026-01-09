@@ -3,6 +3,8 @@ package com.cptracker.core.service;
 import com.cptracker.core.dto.ReviewBlogRequest;
 import com.cptracker.core.entity.Blog;
 import com.cptracker.core.entity.BlogReview;
+import com.cptracker.core.enums.BlogStatus;
+import com.cptracker.core.enums.ReviewAction;
 import com.cptracker.core.repository.BlogRepository;
 import com.cptracker.core.repository.BlogReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +26,11 @@ public class BlogReviewService {
                 .orElseThrow(() -> new RuntimeException("博客不存在"));
 
         // 更新博客状态
-        if ("APPROVE".equals(request.getAction())) {
-            blog.setStatus("PUBLISHED");
+        if (ReviewAction.APPROVE == request.getAction()) {
+            blog.setStatus(BlogStatus.PUBLISHED);
             blog.setPublishedAt(LocalDateTime.now());
-        } else if ("REJECT".equals(request.getAction())) {
-            blog.setStatus("REJECTED");
+        } else if (ReviewAction.REJECT == request.getAction()) {
+            blog.setStatus(BlogStatus.REJECTED);
         }
         blogRepository.save(blog);
 
@@ -36,7 +38,7 @@ public class BlogReviewService {
         BlogReview review = new BlogReview();
         review.setBlogId(request.getBlogId());
         review.setReviewerId(reviewerId);
-        review.setAction(request.getAction());
+        review.setAction(request.getAction().name());
         review.setComment(request.getComment());
         blogReviewRepository.save(review);
     }

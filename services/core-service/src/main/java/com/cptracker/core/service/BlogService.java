@@ -2,6 +2,7 @@ package com.cptracker.core.service;
 
 import com.cptracker.core.dto.CreateBlogRequest;
 import com.cptracker.core.entity.Blog;
+import com.cptracker.core.enums.BlogStatus;
 import com.cptracker.core.repository.BlogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,23 +24,23 @@ public class BlogService {
         blog.setSummary(request.getSummary());
         blog.setContent(request.getContent());
         blog.setCoverUrl(request.getCoverUrl());
-        blog.setStatus("DRAFT");
+        blog.setStatus(BlogStatus.DRAFT);
         return blogRepository.save(blog);
     }
 
     public Page<Blog> getPublishedBlogs(Pageable pageable) {
-        return blogRepository.findByStatus("PUBLISHED", pageable);
+        return blogRepository.findByStatus(BlogStatus.PUBLISHED, pageable);
     }
 
     @Transactional
     public void submitForReview(Long blogId) {
         Blog blog = blogRepository.findById(blogId)
                 .orElseThrow(() -> new RuntimeException("博客不存在"));
-        blog.setStatus("PENDING");
+        blog.setStatus(BlogStatus.PENDING);
         blogRepository.save(blog);
     }
 
     public Page<Blog> getPendingBlogs(Pageable pageable) {
-        return blogRepository.findByStatus("PENDING", pageable);
+        return blogRepository.findByStatus(BlogStatus.PENDING, pageable);
     }
 }

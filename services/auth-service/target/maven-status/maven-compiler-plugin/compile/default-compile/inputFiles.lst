@@ -13,6 +13,8 @@ D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\dto\UpdateProfileRequest.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\dto\UserProfileResponse.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\entity\User.java
+D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\enums\UserRole.java
+D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\enums\UserStatus.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\exception\GlobalExceptionHandler.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\repository\UserRepository.java
 D:\Code\github\CP-Tracker\services\auth-service\src\main\java\com\cptracker\auth\service\AdminService.java

@@ -1,5 +1,6 @@
 package com.cptracker.crawler.fetcher;
 
+import com.cptracker.crawler.config.CrawlerConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,7 +53,7 @@ public class CodeforcesFetcher implements PlatformFetcher {
         // 不限制数量，获取所有提交后过滤365天内的数据
         String url = apiUrl + "/user.status?handle=" + handle;
         List<SubmissionDTO> submissions = new ArrayList<>();
-        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(365);
+        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(CrawlerConstants.DATA_RETENTION_DAYS);
 
         try {
             var response = restTemplate.getForObject(url, CodeforcesSubmissionResponse.class);

@@ -2,6 +2,7 @@ package com.cptracker.auth.service;
 
 import com.cptracker.auth.dto.admin.*;
 import com.cptracker.auth.entity.User;
+import com.cptracker.auth.enums.UserStatus;
 import com.cptracker.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class AdminService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
 
-        user.setStatus("BANNED");
+        user.setStatus(UserStatus.BANNED);
         user.setBanReason(request.getReason());
         userRepository.save(user);
     }
@@ -48,7 +49,7 @@ public class AdminService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
 
-        user.setStatus("ACTIVE");
+        user.setStatus(UserStatus.ACTIVE);
         user.setBanReason(null);
         userRepository.save(user);
     }

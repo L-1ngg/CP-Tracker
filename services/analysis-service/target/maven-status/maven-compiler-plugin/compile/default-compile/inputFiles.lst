@@ -8,6 +8,4 @@ D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\
 D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\analysis\repository\DailyActivityRepository.java
 D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\analysis\repository\SkillRadarRepository.java
 D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\analysis\repository\UserRatingRepository.java
-D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\analysis\service\ActivityService.java
-D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\analysis\service\RatingService.java
-D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\analysis\service\SkillService.java
+D:\Code\github\CP-Tracker\services\analysis-service\src\main\java\com\cptracker\analysis\service\AnalysisService.java

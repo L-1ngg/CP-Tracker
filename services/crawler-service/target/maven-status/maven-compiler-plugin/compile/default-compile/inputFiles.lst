@@ -1,3 +1,4 @@
+D:\Code\github\CP-Tracker\services\crawler-service\src\main\java\com\cptracker\crawler\config\CrawlerConstants.java
 D:\Code\github\CP-Tracker\services\crawler-service\src\main\java\com\cptracker\crawler\config\OpenApiConfig.java
 D:\Code\github\CP-Tracker\services\crawler-service\src\main\java\com\cptracker\crawler\config\RestTemplateConfig.java
 D:\Code\github\CP-Tracker\services\crawler-service\src\main\java\com\cptracker\crawler\controller\CrawlerController.java
@@ -29,4 +30,5 @@ D:\Code\github\CP-Tracker\services\crawler-service\src\main\java\com\cptracker\c
 D:\Code\github\CP-Tracker\services\crawler-service\src\main\java\com\cptracker\crawler\repository\UserRatingRepository.java
 D:\Code\github\CP-Tracker\services\crawler-service\src\main\java\com\cptracker\crawler\scheduler\CrawlerScheduler.java
 D:\Code\github\CP-Tracker\services\crawler-service\src\main\java\com\cptracker\crawler\service\AnalyticsService.java
+D:\Code\github\CP-Tracker\services\crawler-service\src\main\java\com\cptracker\crawler\service\AsyncCrawlerService.java
 D:\Code\github\CP-Tracker\services\crawler-service\src\main\java\com\cptracker\crawler\service\CrawlerService.java

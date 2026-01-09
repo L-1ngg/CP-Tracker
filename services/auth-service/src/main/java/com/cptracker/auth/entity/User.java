@@ -1,5 +1,7 @@
 package com.cptracker.auth.entity;
 
+import com.cptracker.auth.enums.UserRole;
+import com.cptracker.auth.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -25,11 +27,13 @@ public class User {
     @Column(name = "avatar_url", length = 500)
     private String avatarUrl;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private String role = "USER";
+    private UserRole role = UserRole.USER;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private String status = "ACTIVE";
+    private UserStatus status = UserStatus.ACTIVE;
 
     @Column(name = "mute_until")
     private LocalDateTime muteUntil;
@@ -59,14 +63,14 @@ public class User {
     }
 
     public boolean isBanned() {
-        return "BANNED".equals(status);
+        return UserStatus.BANNED == status;
     }
 
     public boolean isAdmin() {
-        return "ADMIN".equals(role);
+        return UserRole.ADMIN == role;
     }
 
     public boolean isModerator() {
-        return "MODERATOR".equals(role) || isAdmin();
+        return UserRole.MODERATOR == role || isAdmin();
     }
 }
