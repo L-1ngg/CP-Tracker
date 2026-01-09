@@ -30,10 +30,12 @@ public class AuthService {
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
 
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user.getId(), user.getUsername(), user.getRole().name());
         return AuthResponse.builder()
                 .token(token)
+                .id(user.getId())
                 .username(user.getUsername())
+                .email(user.getEmail())
                 .role(user.getRole().name())
                 .build();
     }
@@ -46,10 +48,12 @@ public class AuthService {
             throw new RuntimeException("密码错误");
         }
 
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user.getId(), user.getUsername(), user.getRole().name());
         return AuthResponse.builder()
                 .token(token)
+                .id(user.getId())
                 .username(user.getUsername())
+                .email(user.getEmail())
                 .role(user.getRole().name())
                 .build();
     }

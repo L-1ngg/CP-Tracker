@@ -40,9 +40,9 @@ export default function LoginPage() {
     try {
       const response = await authApi.login(data);
       setAuth(response.token, {
-        id: 0,
+        id: response.id,
         username: response.username,
-        email: '',
+        email: response.email,
         role: response.role,
       });
       toast.success('登录成功');

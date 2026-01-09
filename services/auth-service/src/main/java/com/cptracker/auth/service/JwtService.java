@@ -1,5 +1,6 @@
 package com.cptracker.auth.service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,17 @@ public class JwtService {
                 .compact();
     }
 
+    public String generateToken(Long userId, String username, String role) {
+        return Jwts.builder()
+                .subject(username)
+                .claim("userId", userId)
+                .claim("role", role)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
     public String extractUsername(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -38,5 +50,13 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    public Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

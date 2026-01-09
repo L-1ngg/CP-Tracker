@@ -188,4 +188,91 @@ for response type [class NowCoderUserResponse] and content type [text/html;chars
 
 ---
 
-*最后更新: 2025-01*
+## 问题 7: 切换账号后 Dashboard 显示旧用户数据
+
+### 现象
+当用户从账号 A 退出登录后，再登录账号 B，Dashboard 页面仍然显示账号 A 的数据（绑定的平台账号、Rating 等信息）。
+
+### 原因
+
+**1. 登录接口未返回完整用户信息**
+
+后端 `AuthResponse` 只返回了 `token`、`username`、`role`，缺少 `id` 和 `email`。前端登录时使用硬编码的假数据：
+
+```typescript
+// 修复前
+setAuth(response.token, {
+  id: 0,           // 硬编码为 0
+  username: response.username,
+  email: '',       // 空字符串
+  role: response.role,
+});
+```
+
+**2. React Query 缓存未在登出时清除**
+
+Dashboard 使用 `userId` 作为 Query Key，但由于 `userId` 始终相同（0 或 1），切换账号后 React Query 返回缓存数据而非重新请求。
+
+### 解决方法
+
+**1. 后端返回完整用户信息**
+
+```java
+// AuthResponse.java
+public class AuthResponse {
+    private String token;
+    private Long id;        // 新增
+    private String username;
+    private String email;   // 新增
+    private String role;
+}
+
+// AuthService.java
+return AuthResponse.builder()
+        .token(token)
+        .id(user.getId())
+        .username(user.getUsername())
+        .email(user.getEmail())
+        .role(user.getRole().name())
+        .build();
+```
+
+**2. 前端使用真实用户数据**
+
+```typescript
+// login/page.tsx
+setAuth(response.token, {
+  id: response.id,
+  username: response.username,
+  email: response.email,
+  role: response.role,
+});
+```
+
+**3. 登出时清除 React Query 缓存**
+
+```typescript
+// QueryProvider.tsx - 导出全局 queryClient
+export const queryClient = new QueryClient({ ... });
+
+// authStore.ts
+import { queryClient } from '@/providers/QueryProvider';
+
+logout: () => {
+  queryClient.clear();  // 清除所有缓存
+  set({ token: null, user: null, isAuthenticated: false });
+},
+```
+
+### 修改文件
+- `services/auth-service/.../dto/AuthResponse.java`
+- `services/auth-service/.../service/AuthService.java`
+- `frontend/src/types/auth.ts`
+- `frontend/src/app/(auth)/login/page.tsx`
+- `frontend/src/app/(auth)/register/page.tsx`
+- `frontend/src/providers/QueryProvider.tsx`
+- `frontend/src/stores/authStore.ts`
+
+---
+
+*最后更新: 2026-01*

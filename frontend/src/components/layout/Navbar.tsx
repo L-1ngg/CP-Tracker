@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu } from 'lucide-react';
+import { Menu, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Logo } from '@/components/common/Logo';
@@ -16,9 +16,14 @@ const navItems = [
   { href: '/blog', label: '博客' },
 ];
 
+const adminNavItems = [
+  { href: '/admin/blogs', label: '博客审核' },
+];
+
 export function Navbar() {
   const pathname = usePathname();
   const { isAuthenticated, user, logout } = useAuthStore();
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -40,6 +45,26 @@ export function Navbar() {
                 {item.label}
               </Link>
             ))}
+            {isAdmin && (
+              <>
+                <span className="text-muted-foreground/50">|</span>
+                {adminNavItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'text-sm font-medium transition-colors hover:text-primary flex items-center gap-1',
+                      pathname.startsWith('/admin')
+                        ? 'text-primary'
+                        : 'text-muted-foreground'
+                    )}
+                  >
+                    <Shield className="h-3 w-3" />
+                    {item.label}
+                  </Link>
+                ))}
+              </>
+            )}
           </nav>
         </div>
 
@@ -95,6 +120,28 @@ export function Navbar() {
                     {item.label}
                   </Link>
                 ))}
+                {isAdmin && (
+                  <>
+                    <div className="border-t pt-4 mt-2">
+                      <span className="text-xs text-muted-foreground px-2">管理</span>
+                    </div>
+                    {adminNavItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          'text-lg font-medium transition-colors hover:text-primary p-2 rounded-xl flex items-center gap-2',
+                          pathname.startsWith('/admin')
+                            ? 'text-primary bg-primary/10'
+                            : 'text-muted-foreground'
+                        )}
+                      >
+                        <Shield className="h-4 w-4" />
+                        {item.label}
+                      </Link>
+                    ))}
+                  </>
+                )}
                 <div className="border-t pt-4 mt-4">
                   {isAuthenticated ? (
                     <>

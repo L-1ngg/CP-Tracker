@@ -57,9 +57,9 @@ export default function RegisterPage() {
         password: data.password,
       });
       setAuth(response.token, {
-        id: 0,
+        id: response.id,
         username: response.username,
-        email: data.email,
+        email: response.email,
         role: response.role,
       });
       toast.success('注册成功');

@@ -1,3 +1,4 @@
 D:\Code\github\CP-Tracker\api-gateway\src\main\java\com\cptracker\gateway\config\CorsConfig.java
 D:\Code\github\CP-Tracker\api-gateway\src\main\java\com\cptracker\gateway\config\OpenApiConfig.java
+D:\Code\github\CP-Tracker\api-gateway\src\main\java\com\cptracker\gateway\filter\JwtAuthFilter.java
 D:\Code\github\CP-Tracker\api-gateway\src\main\java\com\cptracker\gateway\GatewayApplication.java

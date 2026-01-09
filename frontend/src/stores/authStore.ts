@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { User } from '@/types';
+import { queryClient } from '@/providers/QueryProvider';
 
 interface AuthState {
   token: string | null;
@@ -28,12 +29,15 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: true,
         }),
 
-      logout: () =>
+      logout: () => {
+        // 清除 React Query 缓存，防止切换账号时显示旧数据
+        queryClient.clear();
         set({
           token: null,
           user: null,
           isAuthenticated: false,
-        }),
+        });
+      },
 
       setHydrated: () => set({ isHydrated: true }),
     }),

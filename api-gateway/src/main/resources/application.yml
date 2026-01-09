@@ -57,6 +57,10 @@ spring:
           filters:
             - RewritePath=/v3/api-docs/analysis, /v3/api-docs
 
+# JWT 配置（需要与 auth-service 保持一致）
+jwt:
+  secret: cp-tracker-jwt-secret-key-2025-very-long-string
+
 # SpringDoc OpenAPI
 springdoc:
   api-docs:
