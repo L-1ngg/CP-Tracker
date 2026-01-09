@@ -3,15 +3,17 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
-import { Loader2, Camera, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Camera, Eye, EyeOff, Check, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { toast } from 'sonner';
+import { usePasswordValidation, usePasswordMatch } from '@/hooks/usePasswordValidation';
 
 export default function UserSettingsPage() {
   const params = useParams();
@@ -28,6 +30,11 @@ export default function UserSettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // 密码验证
+  const passwordValidation = usePasswordValidation(newPassword);
+  const passwordMatch = usePasswordMatch(newPassword, confirmPassword);
 
   // 获取用户信息
   const { data: profile, isLoading } = useQuery({
@@ -105,16 +112,23 @@ export default function UserSettingsPage() {
 
   // 处理修改密码
   const handleChangePassword = () => {
-    if (newPassword !== confirmPassword) {
-      toast.error('两次输入的密码不一致');
+    if (!passwordValidation.isValid) {
+      toast.error('密码不符合要求');
       return;
     }
-    if (newPassword.length < 6) {
-      toast.error('密码长度至少6位');
+    if (!passwordMatch.isMatching) {
+      toast.error('两次输入的密码不一致');
       return;
     }
     changePasswordMutation.mutate({ currentPassword, newPassword });
   };
+
+  // 判断修改密码按钮是否可用
+  const canChangePassword =
+    currentPassword.length > 0 &&
+    passwordValidation.isValid &&
+    passwordMatch.isMatching &&
+    !changePasswordMutation.isPending;
 
   // 权限检查
   if (!isAuthenticated) {
@@ -245,20 +259,81 @@ export default function UserSettingsPage() {
                     {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {/* 密码强度指示器 */}
+                {newPassword.length > 0 && (
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-center gap-2">
+                      <Progress
+                        value={passwordValidation.strength}
+                        className="h-1.5 flex-1"
+                        indicatorClassName={passwordValidation.strengthColor}
+                      />
+                      <span className="text-xs text-muted-foreground min-w-[2rem]">
+                        {passwordValidation.strengthLabel}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      {passwordValidation.rules.slice(0, 3).map((rule) => (
+                        <div
+                          key={rule.id}
+                          className={`flex items-center gap-1.5 text-xs ${
+                            rule.passed ? 'text-green-600' : 'text-muted-foreground'
+                          }`}
+                        >
+                          {rule.passed ? (
+                            <Check className="h-3 w-3" />
+                          ) : (
+                            <X className="h-3 w-3" />
+                          )}
+                          <span>{rule.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">确认新密码</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="rounded-xl"
-                />
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="rounded-xl pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {/* 密码匹配状态 */}
+                {passwordMatch.showStatus && (
+                  <div
+                    className={`flex items-center gap-1.5 text-xs ${
+                      passwordMatch.isMatching ? 'text-green-600' : 'text-red-500'
+                    }`}
+                  >
+                    {passwordMatch.isMatching ? (
+                      <>
+                        <Check className="h-3 w-3" />
+                        <span>密码匹配</span>
+                      </>
+                    ) : (
+                      <>
+                        <X className="h-3 w-3" />
+                        <span>密码不匹配</span>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
               <Button
                 onClick={handleChangePassword}
-                disabled={changePasswordMutation.isPending || !currentPassword || !newPassword}
+                disabled={!canChangePassword}
                 variant="outline"
                 className="w-full rounded-xl"
               >
