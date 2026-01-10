@@ -1,4 +1,4 @@
-server:
+﻿server:
   port: 8080
 
 spring:
@@ -11,9 +11,9 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848,127.0.0.1:8849,127.0.0.1:8850}
       config:
-        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848,127.0.0.1:8849,127.0.0.1:8850}
         file-extension: yaml
     gateway:
       routes:
@@ -33,7 +33,7 @@ spring:
           uri: lb://analysis-service
           predicates:
             - Path=/api/analysis/**
-        # API Docs 路由
+        # API Docs 璺敱
         - id: auth-service-api-docs
           uri: lb://auth-service
           predicates:
