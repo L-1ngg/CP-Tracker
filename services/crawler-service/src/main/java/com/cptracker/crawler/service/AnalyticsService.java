@@ -11,6 +11,7 @@ import com.cptracker.crawler.repository.SkillRadarRepository;
 import com.cptracker.crawler.repository.UserRatingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,7 @@ public class AnalyticsService {
     /**
      * 更新用户 Rating
      */
+    @CacheEvict(cacheNames = "analysis:rating", key = "#userId")
     @Transactional
     public void updateUserRating(Long userId, String platform, UserInfoDTO userInfo) {
         if (userInfo == null || userInfo.getRating() == null) {
@@ -76,6 +78,7 @@ public class AnalyticsService {
      * 更新每日活跃度
      * 支持多平台数据合并，会先清理旧数据
      */
+    @CacheEvict(cacheNames = "analysis:heatmap", allEntries = true)
     @Transactional
     public void updateDailyActivity(Long userId, String platform, List<SubmissionDTO> submissions) {
         if (submissions == null || submissions.isEmpty()) {
@@ -137,6 +140,7 @@ public class AnalyticsService {
      * 更新技能雷达图数据
      * 只统计 AC 的提交，按题目难度加权计算评分
      */
+    @CacheEvict(cacheNames = "analysis:skills", key = "#userId")
     @Transactional
     public void updateSkillRadar(Long userId, List<SubmissionDTO> submissions) {
         if (submissions == null || submissions.isEmpty()) {

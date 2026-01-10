@@ -1,7 +1,6 @@
 package com.cptracker.crawler.fetcher;
 
 import com.cptracker.crawler.config.CrawlerConstants;
-import com.cptracker.crawler.config.CrawlerConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,8 +43,6 @@ public class NowCoderFetcher implements PlatformFetcher {
     public UserInfoDTO fetchUserInfo(String handle) {
         // NowCoder 竞赛用户信息 API
         String url = apiUrl + "/acm-heavy/acm/contest/profile-info?uid=" + handle;
-        UserInfoDTO dto = new UserInfoDTO();
-        dto.setHandle(handle);
 
         try {
             HttpEntity<String> entity = new HttpEntity<>(createHeaders());
@@ -53,15 +50,20 @@ public class NowCoderFetcher implements PlatformFetcher {
             var body = response.getBody();
             if (body != null && body.getCode() != null && body.getCode() == 0 && body.getData() != null) {
                 var data = body.getData();
+                UserInfoDTO dto = new UserInfoDTO();
+                dto.setHandle(handle);
                 dto.setRating(data.getRating());
                 dto.setMaxRating(data.getMaxRating());
                 dto.setRank(data.getRank());
+                return dto;
+            } else {
+                log.warn("NowCoder用户不存在或API返回错误, handle={}", handle);
+                return null;
             }
         } catch (Exception e) {
             log.warn("获取NowCoder用户信息失败, handle={}: {}", handle, e.getMessage());
+            return null;
         }
-
-        return dto;
     }
 
     @Override

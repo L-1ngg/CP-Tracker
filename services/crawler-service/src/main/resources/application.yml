@@ -1,13 +1,15 @@
-﻿server:
+server:
   port: 8082
 
 spring:
   application:
     name: crawler-service
   config:
-    import: "nacos:${spring.application.name}.yaml"
+    import: "optional:nacos:${spring.application.name}.yaml"
   datasource:
     url: jdbc:postgresql://localhost:5432/cptracker
+    username: ${POSTGRES_USER:cptracker}
+    password: ${POSTGRES_PASSWORD:cptracker123}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -17,6 +19,7 @@ spring:
     redis:
       host: localhost
       port: 6379
+      password: ${REDIS_PASSWORD:cptracker_redis_123}
   cloud:
     nacos:
       discovery:

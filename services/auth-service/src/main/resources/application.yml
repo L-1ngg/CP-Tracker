@@ -1,11 +1,11 @@
-﻿server:
+server:
   port: 8081
 
 spring:
   application:
     name: auth-service
   config:
-    import: "nacos:${spring.application.name}.yaml"
+    import: "optional:nacos:${spring.application.name}.yaml"
   servlet:
     multipart:
       enabled: true
@@ -13,6 +13,8 @@ spring:
       max-request-size: 10MB
   datasource:
     url: jdbc:postgresql://localhost:5432/cptracker
+    username: ${POSTGRES_USER:cptracker}
+    password: ${POSTGRES_PASSWORD:cptracker123}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

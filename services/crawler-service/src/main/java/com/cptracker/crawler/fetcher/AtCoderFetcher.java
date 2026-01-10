@@ -1,7 +1,6 @@
 package com.cptracker.crawler.fetcher;
 
 import com.cptracker.crawler.config.CrawlerConstants;
-import com.cptracker.crawler.config.CrawlerConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,8 +34,6 @@ public class AtCoderFetcher implements PlatformFetcher {
     public UserInfoDTO fetchUserInfo(String handle) {
         // 从 AtCoder 官网获取用户比赛历史，提取最新 rating
         String historyUrl = "https://atcoder.jp/users/" + handle + "/history/json";
-        UserInfoDTO dto = new UserInfoDTO();
-        dto.setHandle(handle);
 
         try {
             var response = restTemplate.exchange(
@@ -47,23 +44,30 @@ public class AtCoderFetcher implements PlatformFetcher {
             );
 
             List<AtCoderHistoryResponse> history = response.getBody();
-            if (history != null && !history.isEmpty()) {
-                // 获取最新一场比赛的 rating
-                AtCoderHistoryResponse latest = history.get(history.size() - 1);
-                dto.setRating(latest.getNewRating());
-
-                // 计算最高 rating
-                int maxRating = history.stream()
-                        .mapToInt(AtCoderHistoryResponse::getNewRating)
-                        .max()
-                        .orElse(0);
-                dto.setMaxRating(maxRating);
+            if (history == null || history.isEmpty()) {
+                log.warn("AtCoder用户无比赛历史或不存在, handle={}", handle);
+                return null;
             }
+
+            UserInfoDTO dto = new UserInfoDTO();
+            dto.setHandle(handle);
+
+            // 获取最新一场比赛的 rating
+            AtCoderHistoryResponse latest = history.get(history.size() - 1);
+            dto.setRating(latest.getNewRating());
+
+            // 计算最高 rating
+            int maxRating = history.stream()
+                    .mapToInt(AtCoderHistoryResponse::getNewRating)
+                    .max()
+                    .orElse(0);
+            dto.setMaxRating(maxRating);
+
+            return dto;
         } catch (Exception e) {
             log.warn("获取AtCoder用户Rating失败, handle={}, error={}", handle, e.getMessage());
+            return null;
         }
-
-        return dto;
     }
 
     @Override

@@ -1,11 +1,11 @@
-﻿server:
+server:
   port: 8080
 
 spring:
   application:
     name: api-gateway
   config:
-    import: "nacos:${spring.application.name}.yaml"
+    import: "optional:nacos:${spring.application.name}.yaml"
   codec:
     max-in-memory-size: 10MB
   cloud:
@@ -33,7 +33,7 @@ spring:
           uri: lb://analysis-service
           predicates:
             - Path=/api/analysis/**
-        # API Docs 璺敱
+        # API Docs 路由
         - id: auth-service-api-docs
           uri: lb://auth-service
           predicates:
@@ -75,4 +75,3 @@ springdoc:
         url: /v3/api-docs/crawler
       - name: analysis-service
         url: /v3/api-docs/analysis
-
