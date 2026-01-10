@@ -59,7 +59,7 @@ spring:
 
 # JWT 配置（需要与 auth-service 保持一致）
 jwt:
-  secret: cp-tracker-jwt-secret-key-2025-very-long-string
+  secret: ${JWT_SECRET}
 
 # SpringDoc OpenAPI
 springdoc:
@@ -77,3 +77,4 @@ springdoc:
         url: /v3/api-docs/crawler
       - name: analysis-service
         url: /v3/api-docs/analysis
+
