@@ -4,6 +4,8 @@
 spring:
   application:
     name: auth-service
+  config:
+    import: "nacos:${spring.application.name}.yaml"
   servlet:
     multipart:
       enabled: true
@@ -11,8 +13,6 @@ spring:
       max-request-size: 10MB
   datasource:
     url: jdbc:postgresql://localhost:5432/cptracker
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -21,17 +21,14 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
-
-jwt:
-  secret: ${JWT_SECRET}
-  expiration: ${JWT_EXPIRATION:86400000}
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        file-extension: yaml
 
 # MinIO 对象存储
 minio:
   endpoint: http://localhost:9000
-  access-key: ${MINIO_ACCESS_KEY}
-  secret-key: ${MINIO_SECRET_KEY}
   bucket: avatars
 
 # SpringDoc OpenAPI

@@ -45,7 +45,7 @@ POST /api/auth/login
 **请求体**:
 ```json
 {
-  "email": "string",
+  "username": "string",
   "password": "string"
 }
 ```

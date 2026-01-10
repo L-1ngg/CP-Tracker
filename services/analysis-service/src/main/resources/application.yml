@@ -4,10 +4,10 @@
 spring:
   application:
     name: analysis-service
+  config:
+    import: "nacos:${spring.application.name}.yaml"
   datasource:
     url: jdbc:postgresql://localhost:5432/cptracker
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -23,7 +23,10 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        file-extension: yaml
 
 # SpringDoc OpenAPI
 springdoc:

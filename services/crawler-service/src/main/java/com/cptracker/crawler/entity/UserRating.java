@@ -2,12 +2,14 @@ package com.cptracker.crawler.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Filter;
 
 import java.time.LocalDateTime;
 
 @Data
 @Entity
 @Table(name = "user_rating", schema = "analytics")
+@Filter(name = "userFilter", condition = "user_id = :userId")
 public class UserRating {
 
     @Id
