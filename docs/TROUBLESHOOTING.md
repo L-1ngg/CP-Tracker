@@ -275,4 +275,104 @@ logout: () => {
 
 ---
 
+## 问题 8: Redis 认证失败 (WRONGPASS)
+
+### 现象
+服务报错：
+```
+RedisCommandExecutionException: WRONGPASS invalid username-password pair or user is disabled.
+```
+
+### 原因
+Redis 使用 `--requirepass` 启用了密码，但服务端配置的 `REDIS_PASSWORD` 与实际密码不一致，或额外配置了用户名导致认证失败。
+
+### 解决方法
+
+1. 确保 `.env` 与 `docker-compose.yml` 中的 `REDIS_PASSWORD` 一致
+2. 重启 Redis 容器使密码生效
+3. 如果未使用 ACL 用户名，Spring 侧不要设置 `spring.data.redis.username`
+
+```yaml
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD}
+```
+
+---
+
+## 问题 9: Redis 缓存反序列化成 LinkedHashMap
+
+### 现象
+```
+ClassCastException: class java.util.LinkedHashMap cannot be cast to class com.cptracker.analysis.entity.UserRating
+```
+
+### 原因
+默认序列化没有写入类型信息，反序列化为 `LinkedHashMap`。
+
+### 解决方法
+
+使用 `GenericJackson2JsonRedisSerializer` 并开启类型信息，同时清理旧缓存：
+
+```java
+ObjectMapper cacheObjectMapper = objectMapper.copy();
+cacheObjectMapper.activateDefaultTyping(
+        ptv,
+        ObjectMapper.DefaultTyping.NON_FINAL,
+        JsonTypeInfo.As.PROPERTY);
+RedisSerializer<Object> serializer = new GenericJackson2JsonRedisSerializer(cacheObjectMapper);
+```
+
+清理旧数据：
+```
+redis-cli -a ${REDIS_PASSWORD} FLUSHDB
+```
+
+---
+
+## 问题 10: SpEL `isEmpty()` 找不到方法
+
+### 现象
+```
+SpelEvaluationException: Method call: Method isEmpty() cannot be found on type com.xxx.UserRating
+```
+
+### 原因
+`@Cacheable` 的 `unless` 表达式对实体对象调用 `isEmpty()`，但实体类没有该方法。
+
+### 解决方法
+
+对实体使用 `#result == null` 判断；对集合使用 `#result == null || #result.isEmpty()`：
+
+```java
+@Cacheable(cacheNames = "analysis:rating", key = "#userId", unless = "#result == null")
+public UserRating getUserRating(Long userId) {
+    return userRatingRepository.findById(userId).orElse(null);
+}
+```
+
+---
+
+## 问题 11: Multiple '@FilterDef' annotations define a filter named 'userFilter'
+
+### 现象
+服务启动时报错：
+```
+AnnotationException: Multiple '@FilterDef' annotations define a filter named 'userFilter'
+```
+
+### 原因
+同一个持久化单元中重复定义了 `@FilterDef(name = "userFilter")`（常见于多包扫描或复用实体）。
+
+### 解决方法
+
+- 保证每个 `EntityManagerFactory` 里只定义一次 `@FilterDef`
+- 如需共存，改用不同的 filter 名称
+- 使用 `@EntityScan` 限定扫描范围，避免把其他服务的 entity 扫进来
+
+---
+
 *最后更新: 2026-01*

@@ -117,6 +117,65 @@ Content-Type: multipart/form-data
 }
 ```
 
+### 1.7 管理员接口
+
+**基础路径**: `/api/auth/admin`（需要 ADMIN 权限）
+
+#### 1.7.1 禁言用户
+
+```
+POST /api/auth/admin/mute
+```
+
+**请求体**:
+```json
+{
+  "userId": 1,
+  "days": 7,
+  "reason": "string"
+}
+```
+
+#### 1.7.2 解除禁言
+
+```
+POST /api/auth/admin/unmute/{userId}
+```
+
+#### 1.7.3 封禁用户
+
+```
+POST /api/auth/admin/ban
+```
+
+**请求体**:
+```json
+{
+  "userId": 1,
+  "reason": "string"
+}
+```
+
+#### 1.7.4 解封用户
+
+```
+POST /api/auth/admin/unban/{userId}
+```
+
+#### 1.7.5 变更角色
+
+```
+POST /api/auth/admin/role
+```
+
+**请求体**:
+```json
+{
+  "userId": 1,
+  "role": "ADMIN"  // USER, ADMIN
+}
+```
+
 ---
 
 ## 2. 爬虫服务 (Crawler Service)
@@ -126,29 +185,39 @@ Content-Type: multipart/form-data
 ### 2.1 绑定平台账号
 
 ```
-POST /api/crawler/handles
+POST /api/crawler/handles/{userId}
 Authorization: Bearer {token}
 ```
 
 **请求体**:
 ```json
 {
-  "platform": "CODEFORCES",  // CODEFORCES, ATCODER
+  "platform": "CODEFORCES",  // CODEFORCES, ATCODER, NOWCODER(暂未启用)
   "handle": "tourist"
 }
 ```
 
-**说明**: 绑定时会自动验证账号有效性并同步数据
+**说明**: 绑定时会自动验证账号有效性并触发同步
+
+**响应**:
+```json
+{
+  "userId": 1,
+  "platform": "CODEFORCES",
+  "handle": "tourist",
+  "lastFetched": "2025-01-01T00:00:00",
+  "rating": 2000,
+  "maxRating": 2100,
+  "rank": "candidate master"
+}
+```
 
 ### 2.2 解绑平台账号
 
 ```
-DELETE /api/crawler/handles
+DELETE /api/crawler/handles/{userId}/{platform}
 Authorization: Bearer {token}
 ```
-
-**请求参数**:
-- `platform`: 平台名称 (CODEFORCES, ATCODER)
 
 ### 2.3 获取绑定账号列表
 
@@ -160,26 +229,32 @@ GET /api/crawler/handles/{userId}
 ```json
 [
   {
+    "userId": 1,
     "platform": "CODEFORCES",
     "handle": "tourist",
-    "lastFetched": "2025-01-01T00:00:00"
-  },
-  {
-    "platform": "ATCODER",
-    "handle": "tourist",
-    "lastFetched": "2025-01-01T00:00:00"
+    "lastFetched": "2025-01-01T00:00:00",
+    "rating": 2000,
+    "maxRating": 2100,
+    "rank": "candidate master"
   }
 ]
 ```
 
-### 2.4 手动同步数据
+### 2.4 手动同步指定用户
 
 ```
-POST /api/crawler/sync/{userId}
-Authorization: Bearer {token}
+POST /api/crawler/sync/user/{userId}
 ```
 
 **说明**: 触发指定用户的数据同步
+
+### 2.5 手动同步全部用户
+
+```
+POST /api/crawler/sync
+```
+
+**说明**: 触发全量同步（通常由定时任务执行）
 
 ---
 
@@ -188,7 +263,6 @@ Authorization: Bearer {token}
 **基础路径**: `/api/analysis`
 
 ### 3.1 获取热力图数据
-
 ```
 GET /api/analysis/heatmap/{userId}
 ```
@@ -211,7 +285,6 @@ GET /api/analysis/heatmap/{userId}
 ```
 
 ### 3.2 获取技能雷达数据
-
 ```
 GET /api/analysis/skills/{userId}
 ```
@@ -249,13 +322,17 @@ GET /api/analysis/rating/{userId}
 }
 ```
 
+**说明**: 用户无 Rating 数据时返回仅包含 `userId` 的空对象。
+
 ---
 
 ## 4. 核心服务 (Core Service)
 
 **基础路径**: `/api/core`
 
-### 4.1 博客列表
+### 4.1 博客
+
+#### 4.1.1 获取已发布博客列表
 
 ```
 GET /api/core/blogs
@@ -264,13 +341,12 @@ GET /api/core/blogs
 **请求参数**:
 - `page`: 页码，默认 0
 - `size`: 每页大小，默认 10
-- `status`: 状态筛选 (PUBLISHED)
 
-### 4.2 创建博客
+#### 4.1.2 创建博客（草稿）
 
 ```
 POST /api/core/blogs
-Authorization: Bearer {token}
+X-User-Id: {userId}
 ```
 
 **请求体**:
@@ -283,11 +359,212 @@ Authorization: Bearer {token}
 }
 ```
 
-### 4.3 博客详情
+#### 4.1.3 获取当前用户博客
+
+```
+GET /api/core/blogs/my
+X-User-Id: {userId}
+```
+
+#### 4.1.4 获取当前用户草稿
+
+```
+GET /api/core/blogs/my/drafts
+X-User-Id: {userId}
+```
+
+#### 4.1.5 博客详情
 
 ```
 GET /api/core/blogs/{id}
 ```
+
+#### 4.1.6 更新博客
+
+```
+PUT /api/core/blogs/{id}
+X-User-Id: {userId}
+```
+
+#### 4.1.7 删除博客
+
+```
+DELETE /api/core/blogs/{id}
+X-User-Id: {userId}
+```
+
+#### 4.1.8 提交审核
+
+```
+POST /api/core/blogs/{id}/submit
+```
+
+### 4.2 审核（管理员）
+
+#### 4.2.1 获取待审核博客
+
+```
+GET /api/core/admin/blogs/pending
+```
+
+#### 4.2.2 审核博客
+
+```
+POST /api/core/admin/blogs/review
+X-User-Id: {reviewerId}
+```
+
+**请求体**:
+```json
+{
+  "blogId": 1,
+  "action": "APPROVE",  // APPROVE, REJECT
+  "comment": "string"
+}
+```
+
+### 4.3 评论
+
+#### 4.3.1 获取博客评论列表
+
+```
+GET /api/core/blogs/{blogId}/comments
+```
+
+**请求参数**:
+- `page`: 页码，默认 0
+- `size`: 每页大小，默认 10
+
+#### 4.3.2 获取顶级评论
+
+```
+GET /api/core/blogs/{blogId}/comments/top
+```
+
+#### 4.3.3 获取评论回复
+
+```
+GET /api/core/comments/{commentId}/replies
+```
+
+#### 4.3.4 发表评论
+
+```
+POST /api/core/blogs/{blogId}/comments
+X-User-Id: {userId}
+```
+
+**请求体**:
+```json
+{
+  "content": "string",
+  "parentId": 1
+}
+```
+
+#### 4.3.5 删除评论
+
+```
+DELETE /api/core/comments/{commentId}
+X-User-Id: {userId}
+```
+
+### 4.4 点赞
+
+#### 4.4.1 点赞博客
+
+```
+POST /api/core/blogs/{id}/like
+X-User-Id: {userId}
+```
+
+#### 4.4.2 取消点赞
+
+```
+DELETE /api/core/blogs/{id}/like
+X-User-Id: {userId}
+```
+
+#### 4.4.3 获取点赞状态
+
+```
+GET /api/core/blogs/{id}/like/status
+X-User-Id: {userId} (可选)
+```
+
+**响应**:
+```json
+{
+  "hasLiked": true,
+  "likeCount": 10
+}
+```
+
+### 4.5 标签
+
+#### 4.5.1 获取所有标签
+
+```
+GET /api/core/tags
+```
+
+#### 4.5.2 创建标签（管理员）
+
+```
+POST /api/core/admin/tags
+```
+
+**请求体**:
+```json
+{
+  "name": "string"
+}
+```
+
+#### 4.5.3 删除标签（管理员）
+
+```
+DELETE /api/core/admin/tags/{id}
+```
+
+#### 4.5.4 获取博客标签
+
+```
+GET /api/core/blogs/{blogId}/tags
+```
+
+#### 4.5.5 给博客添加标签
+
+```
+POST /api/core/blogs/{blogId}/tags/{tagId}
+```
+
+#### 4.5.6 移除博客标签
+
+```
+DELETE /api/core/blogs/{blogId}/tags/{tagId}
+```
+
+#### 4.5.7 批量设置博客标签
+
+```
+PUT /api/core/blogs/{blogId}/tags
+```
+
+**请求体**:
+```json
+[1, 2, 3]
+```
+
+#### 4.5.8 按标签筛选博客
+
+```
+GET /api/core/blogs/by-tag/{tagId}
+```
+
+**请求参数**:
+- `page`: 页码，默认 0
+- `size`: 每页大小，默认 10
 
 ---
 
@@ -333,4 +610,4 @@ GET /api/core/blogs/{id}
 
 ---
 
-*最后更新: 2025-01*
+*最后更新: 2026-01*

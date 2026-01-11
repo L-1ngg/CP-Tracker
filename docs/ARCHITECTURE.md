@@ -6,13 +6,13 @@
 
 ## 1. 项目定位
 
-CP-Tracker 是一个**一站式算法竞赛情报中心**。系统不负责判题，而是作为"连接器"，抓取 Codeforces (CF)、AtCoder (AT)、NowCoder (NK) 等主流平台的比赛、题目和用户提交记录，经过清洗后为用户提供数据分析服务。
+CP-Tracker 是一个**算法竞赛数据聚合与分析平台**。系统不负责判题，而是作为"连接器"，抓取 Codeforces (CF)、AtCoder (AT) 等主流平台的用户提交记录，经过清洗后为用户提供数据分析服务与技术社区能力。NowCoder 接入因反爬限制暂时停用，接口预留。
 
 ### 核心功能
 
 | 功能模块 | 描述 |
 |---------|------|
-| **统一竞赛日历** | 聚合各平台近期比赛，一站式查看所有 OJ 的比赛安排 |
+| **统一竞赛日历** | 当前前端为 mock/占位，后端接口预留 |
 | **全网能力画像** | 基于用户在多个平台的表现，生成统一的能力雷达图和积分曲线 |
 | **可视化训练分析** | 每日提交热力图、标签专项分析、补题进度追踪 |
 | **极客博客** | 支持 Markdown/LaTeX 的技术分享社区 |
@@ -28,10 +28,10 @@ CP-Tracker 是一个**一站式算法竞赛情报中心**。系统不负责判�
 | 服务名称 | 端口 | 核心职责 | 技术关键点 |
 |---------|------|---------|-----------|
 | **Gateway** | 8080 | 流量入口、鉴权、限流 | Spring Cloud Gateway, JWT 解析 |
-| **Auth Service** | 8081 | 用户注册、登录、第三方账号绑定 | Spring Security, JWT |
-| **Crawler Service** | 8082 | 多平台数据抓取、清洗、入库 | Quartz/Spring Schedule, Jsoup |
-| **Analysis Service** | 8083 | 数据聚合、Rating 计算、图表数据生成 | 异步计算, Redis 缓存热点数据 |
-| **Core Service** | 8084 | 比赛日历管理、题目元数据、博客系统 | CRUD, Elasticsearch (可选) |
+| **Auth Service** | 8081 | 用户注册、登录、资料维护、后台管理 | Spring Security, JWT |
+| **Crawler Service** | 8082 | 平台账号绑定、数据抓取、清洗入库 | Spring Schedule, Redis 分布式锁, Jsoup |
+| **Analysis Service** | 8083 | 数据聚合查询、图表数据输出 | Redis 缓存, 只读查询 |
+| **Core Service** | 8084 | 博客系统（草稿/审核/评论/点赞/标签） | CRUD, 状态流转 |
 | **Nacos** | 8848 | 配置中心、服务注册与发现 | 动态调整爬虫频率、代理 IP 池配置 |
 
 ### 2.2 架构图
@@ -66,7 +66,7 @@ CP-Tracker 是一个**一站式算法竞赛情报中心**。系统不负责判�
 │  ┌──────────────┐    定时抓取    ┌──────────────┐    写入    ┌───────────┐ │
 │  │  Codeforces  │ ─────────────► │              │ ─────────► │           │ │
 │  │  AtCoder     │                │   Crawler    │            │ PostgreSQL│ │
-│  │  NowCoder    │                │   Service    │            │ (原始数据) │ │
+│  │  (预留)      │                │   Service    │            │ (原始数据) │ │
 │  └──────────────┘                └──────────────┘            └───────────┘ │
 │                                         │                                   │
 │                                         │ 触发分析                          │
@@ -84,6 +84,8 @@ CP-Tracker 是一个**一站式算法竞赛情报中心**。系统不负责判�
 │                                  └──────────────┘                          │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+博客与评论/标签数据由 Core Service 直接写入 `public` schema，与爬虫/分析数据分离。
 
 ---
 
@@ -173,11 +175,15 @@ public interface PlatformFetcher {
 |-----|-------------|---------|
 | **Codeforces** | 官方 REST API | API 限制 5次/秒，需实现令牌桶限流 |
 | **AtCoder** | kenkoooo API + HTML 解析 | 使用第三方 API |
-| **NowCoder** | Jsoup 解析 HTML | 有反爬机制，暂停使用 |
+| **NowCoder** | Jsoup 解析 HTML | 反爬限制，暂时停用 |
+
+**定时任务**
+- 每天凌晨 2 点同步全量用户
+- 使用 Redis 分布式锁 + 本地 AtomicBoolean 防止多实例重复执行
 
 ### 5.2 分析服务 (Analysis Service)
 
-负责将原始的"提交记录"转化为"可视化指标"。
+负责将原始的"提交记录"转化为"可视化指标"，并提供 Redis 缓存。
 
 **统一能力评分计算**
 
@@ -189,7 +195,15 @@ public interface PlatformFetcher {
 - 只有 AT：直接使用 AT Rating
 - 两者都有：加权平均
 
-### 5.3 文件存储 (MinIO)
+### 5.3 核心服务 (Core Service)
+
+围绕博客系统实现内容社区能力。
+
+- 状态流转：`DRAFT -> PENDING -> PUBLISHED/REJECTED`
+- 交互能力：评论、点赞、标签绑定
+- 审核记录：管理员操作写入 `blog_reviews`
+
+### 5.4 文件存储 (MinIO)
 
 **存储路径规范**: `avatar/{userId}/{uuid}.{ext}`
 
@@ -210,4 +224,4 @@ public interface PlatformFetcher {
 
 ---
 
-*最后更新: 2025-01*
+*最后更新: 2026-01*

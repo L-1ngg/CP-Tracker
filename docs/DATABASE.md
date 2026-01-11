@@ -61,6 +61,76 @@ CREATE INDEX idx_blogs_author ON public.blogs(author_id);
 CREATE INDEX idx_blogs_status ON public.blogs(status);
 ```
 
+### 2.3 博客评论表 (blog_comments)
+
+```sql
+CREATE TABLE public.blog_comments (
+    id BIGSERIAL PRIMARY KEY,
+    blog_id BIGINT REFERENCES public.blogs(id),
+    user_id BIGINT REFERENCES public.users(id),
+    content TEXT NOT NULL,
+    parent_id BIGINT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_blog_comments_blog ON public.blog_comments(blog_id);
+CREATE INDEX idx_blog_comments_parent ON public.blog_comments(parent_id);
+CREATE INDEX idx_blog_comments_user ON public.blog_comments(user_id);
+```
+
+### 2.4 博客点赞表 (blog_likes)
+
+```sql
+CREATE TABLE public.blog_likes (
+    id BIGSERIAL PRIMARY KEY,
+    blog_id BIGINT REFERENCES public.blogs(id),
+    user_id BIGINT REFERENCES public.users(id),
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (blog_id, user_id)
+);
+
+CREATE INDEX idx_blog_likes_blog ON public.blog_likes(blog_id);
+CREATE INDEX idx_blog_likes_user ON public.blog_likes(user_id);
+```
+
+### 2.5 博客审核表 (blog_reviews)
+
+```sql
+CREATE TABLE public.blog_reviews (
+    id BIGSERIAL PRIMARY KEY,
+    blog_id BIGINT REFERENCES public.blogs(id),
+    reviewer_id BIGINT REFERENCES public.users(id),
+    action VARCHAR(20) NOT NULL,
+    comment VARCHAR(500),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_blog_reviews_blog ON public.blog_reviews(blog_id);
+CREATE INDEX idx_blog_reviews_reviewer ON public.blog_reviews(reviewer_id);
+```
+
+### 2.6 博客标签表 (blog_tags)
+
+```sql
+CREATE TABLE public.blog_tags (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+```
+
+### 2.7 博客标签关系表 (blog_tag_relations)
+
+```sql
+CREATE TABLE public.blog_tag_relations (
+    blog_id BIGINT REFERENCES public.blogs(id),
+    tag_id BIGINT REFERENCES public.blog_tags(id),
+    PRIMARY KEY (blog_id, tag_id)
+);
+
+CREATE INDEX idx_blog_tag_relations_tag ON public.blog_tag_relations(tag_id);
+```
+
 ---
 
 ## 3. Schema: crawler
@@ -183,6 +253,9 @@ CREATE TABLE analytics.user_rating (
 |----|------|------|
 | users | username, email | 登录查询 |
 | blogs | author_id, status | 列表查询 |
+| blog_comments | blog_id, parent_id | 评论查询 |
+| blog_likes | blog_id, user_id | 点赞查询 |
+| blog_tag_relations | tag_id | 标签筛选 |
 | user_handles | platform | 按平台查询 |
 | submissions | user_id, submission_time | 热力图查询 |
 | daily_activity | user_id | 热力图查询 |
@@ -220,6 +293,10 @@ CREATE TABLE crawler.submissions_2026 PARTITION OF crawler.submissions
     FOR VALUES FROM ('2026-01-01') TO ('2027-01-01');
 ```
 
+### 6.4 唯一约束
+
+`blog_likes` 使用 `(blog_id, user_id)` 唯一约束，避免重复点赞。
+
 ---
 
-*最后更新: 2025-01*
+*最后更新: 2026-01*

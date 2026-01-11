@@ -9,6 +9,9 @@
 1. [用户设置页面](#功能-1-用户设置页面)
 2. [统一Rating加权计算](#功能-2-统一rating加权计算)
 3. [多平台数据爬取](#功能-3-多平台数据爬取)
+4. [博客发布与审核](#功能-4-博客发布与审核)
+5. [评论、点赞与标签](#功能-5-评论点赞与标签)
+6. [Redis缓存与分布式锁](#功能-6-redis缓存与分布式锁)
 
 ---
 
@@ -36,12 +39,12 @@
 </dependency>
 ```
 
-配置 (`application.yml`):
+配置 (`application.yml` 或 Nacos 配置):
 ```yaml
 minio:
   endpoint: http://localhost:9000
-  access-key: ${MINIO_ACCESS_KEY}
-  secret-key: ${MINIO_SECRET_KEY}
+  access-key: ${MINIO_ROOT_USER}
+  secret-key: ${MINIO_ROOT_PASSWORD}
   bucket: avatars
 ```
 
@@ -147,9 +150,11 @@ uploadAvatar: async (file: File): Promise<string> => {
    docker-compose up -d minio
    ```
 
-2. 重启auth-service
+2. 在 Nacos 或本地配置中设置 `minio.access-key` / `minio.secret-key`
 
-3. 访问用户设置页面：`http://localhost:3000/u/{username}`
+3. 重启 auth-service
+
+4. 访问用户设置页面：`http://localhost:3000/u/{username}`
 
 ---
 
@@ -188,7 +193,8 @@ private Integer calculateWeightedRating(Integer cfRating, Integer atRating) {
 
     if (hasCf && hasAt) {
         // 两个平台都有：加权平均
-        return (int) (cfRating * 0.7 + atRating * 0.3);
+        return (int) (cfRating * CrawlerConstants.CF_RATING_WEIGHT
+                + atRating * CrawlerConstants.AT_RATING_WEIGHT);
     } else if (hasCf) {
         return cfRating;
     } else if (hasAt) {
@@ -226,7 +232,20 @@ Could not extract response: no suitable HttpMessageConverter found
 for response type [class NowCoderUserResponse] and content type [text/html;charset=UTF-8]
 ```
 
-**临时处理**: 在前端 `BindAccountDialog.tsx` 中注释掉NowCoder选项，保留后端代码待后续解决。
+**临时处理**: 在前端 `BindAccountDialog.tsx` 中暂时隐藏 NowCoder 选项，保留后端代码待后续解决。
+
+### 定时同步与锁机制
+
+爬虫使用 Spring Schedule 定时任务，并通过 Redis 分布式锁避免多实例重复执行：
+
+```java
+// CrawlerScheduler.java - 关键逻辑
+Boolean acquired = redisTemplate.opsForValue()
+        .setIfAbsent(SYNC_LOCK_KEY, lockValue, LOCK_TIMEOUT);
+if (Boolean.TRUE.equals(acquired)) {
+    crawlerService.syncAllUsers();
+}
+```
 
 ### 热力图数据合并
 
@@ -234,10 +253,6 @@ for response type [class NowCoderUserResponse] and content type [text/html;chars
 
 ```java
 // AnalyticsService.java - updateDailyActivity()
-DailyActivity activity = dailyActivityRepository
-    .findByUserIdAndDate(userId, date)
-    .orElseGet(() -> { ... });
-
 Map<String, Integer> breakdown = activity.getPlatformBreakdown();
 breakdown.put(platform, count);  // 按平台存储
 activity.setCount(breakdown.values().stream()
@@ -246,4 +261,105 @@ activity.setCount(breakdown.values().stream()
 
 ---
 
-*最后更新: 2025-01*
+## 功能 4: 博客发布与审核
+
+### 需求描述
+
+实现博客的草稿编辑、提交审核与管理员发布/驳回流程。
+
+### 状态流转
+
+| 状态 | 说明 | 触发 |
+|------|------|------|
+| DRAFT | 草稿 | 创建/编辑 |
+| PENDING | 待审核 | 提交审核 |
+| PUBLISHED | 已发布 | 管理员通过 |
+| REJECTED | 已拒绝 | 管理员驳回 |
+
+### 后端实现 (core-service)
+
+**1. 核心接口**
+
+| 方法 | 路径 | 功能 |
+|------|------|------|
+| POST | `/api/core/blogs` | 创建草稿 |
+| POST | `/api/core/blogs/{id}/submit` | 提交审核 |
+| GET | `/api/core/admin/blogs/pending` | 待审列表 |
+| POST | `/api/core/admin/blogs/review` | 审核博客 |
+
+**2. 审核逻辑**
+
+```java
+// BlogReviewService.java
+if (ReviewAction.APPROVE == request.getAction()) {
+    blog.setStatus(BlogStatus.PUBLISHED);
+    blog.setPublishedAt(LocalDateTime.now());
+} else if (ReviewAction.REJECT == request.getAction()) {
+    blog.setStatus(BlogStatus.REJECTED);
+}
+```
+
+**3. 权限点**
+- 编辑/删除仅允许作者本人
+- 管理员审核通过 `X-User-Id` 记录 reviewer
+
+---
+
+## 功能 5: 评论、点赞与标签
+
+### 评论体系
+
+- 评论支持 `parentId` 实现楼中楼回复
+- 提供顶级评论与回复列表接口
+
+```java
+// CreateCommentRequest.java
+private String content;
+private Long parentId;
+```
+
+### 点赞体系
+
+- `blog_likes` 使用 `(blog_id, user_id)` 唯一约束
+- 点赞/取消点赞会同步更新 `blogs.like_count`
+
+```java
+// BlogLikeService.java
+if (blogLikeRepository.existsByBlogIdAndUserId(blogId, userId)) {
+    throw new RuntimeException("已经点赞过了");
+}
+```
+
+### 标签体系
+
+- 标签表 `blog_tags` 与关系表 `blog_tag_relations`
+- 支持按标签筛选博客与批量设置标签
+
+---
+
+## 功能 6: Redis缓存与分布式锁
+
+### 分析服务缓存
+
+Analysis Service 使用 `@Cacheable` + Redis 缓存热点数据，避免重复查询。
+
+```java
+@Cacheable(cacheNames = "analysis:rating", key = "#userId", unless = "#result == null")
+public UserRating getUserRating(Long userId) {
+    return userRatingRepository.findById(userId).orElse(null);
+}
+```
+
+缓存序列化使用 `GenericJackson2JsonRedisSerializer` 并开启类型信息，避免反序列化成 `LinkedHashMap`：
+
+```java
+RedisSerializer<Object> serializer = new GenericJackson2JsonRedisSerializer(cacheObjectMapper);
+```
+
+### 分布式锁
+
+Crawler Service 在定时任务中使用 Redis 分布式锁，避免多实例重复同步。
+
+---
+
+*最后更新: 2026-01*
